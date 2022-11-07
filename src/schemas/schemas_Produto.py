@@ -3,13 +3,6 @@ from msilib.schema import Class
 from pydantic import BaseModel
 from typing import Optional,List
 
-class ProdutoSimples(BaseModel):
-    id: Optional[int] = None
-    #usuario: Usuario
-    nome: str
-    preco: float
-    class Config:
-        orm_mode = True
 
 class Usuario(BaseModel):
     
@@ -17,21 +10,12 @@ class Usuario(BaseModel):
     nome: str
     senha: str
     telefone: str
-    produtos: List[ProdutoSimples]=[]
+    #produtos: List[Produto]=[]
     #minhas_vendas: List[Pedido]
     #meus_pedidos: List[Pedido]
 
     class Config:
        orm_mode = True
-
-class UsuarioSimples(BaseModel):
-    
-    id: Optional[int] = None
-    nome: str
-    telefone: str
-    class Config:
-       orm_mode = True
-
 class Produto(BaseModel):
     id: Optional[int] = None
     #usuario: Usuario
@@ -39,13 +23,11 @@ class Produto(BaseModel):
     detalhes: str
     preco: float
     disponivel: bool = False
-    usuario_id : Optional[int]
-    usuario: Optional[UsuarioSimples]
+    usuario_id : int
+    usuario: Optional[Usuario]
 
     class Config:
         orm_mode = True
-
-
 
 class Usuario(BaseModel):
     id: Optional[int] = None
