@@ -1,14 +1,14 @@
 
 from sqlalchemy.orm import Session
-from sqlalchemy import update,delete
+from sqlalchemy import update,delete,select
 from src.schemas import schemas 
 from src.infra.sqlalchemy.models import models
 
 
 class RepositorioProduto():
 
-    def __init__(self, db:Session):
-        self.db = db
+    def __init__(self, session:Session):
+        self.session = session
 
     def criar(self, produto:schemas.Produto):
         db_produto = models.Produto(nome = produto.nome,
@@ -16,15 +16,20 @@ class RepositorioProduto():
                                     preco = produto.preco,
                                     disponivel = produto.disponivel,
                                     usuario_id = produto.usuario_id)
-        self.db.add(db_produto)
-        self.db.commit()
-        self.db.refresh(db_produto)
+        self.session.add(db_produto)
+        self.session.commit()
+        self.session.refresh(db_produto)
         return db_produto
 
 
     def listar(self):
-        produtos = self.db.query(models.Produto).all()
+        produtos = self.session.query(models.Produto).all()
         return produtos
+    
+    def buscarPorId(self,id:int):
+        consulta = select(models.Produto).where(models.Produto.id == id)
+        produto = self.session.execute(consulta).first()
+        return produto
 
     def editar(self,id: int,produto : schemas.Produto):
         update_stmt = update(models.Produto).where(models.Produto.id == id).values(
@@ -32,12 +37,12 @@ class RepositorioProduto():
             detalhes = produto.detalhes,
             preco = produto.preco,
             disponivel = produto.disponivel)
-        produto_update = self.db.execute(update_stmt)
-        self.db.commit()
+        produto_update = self.session.execute(update_stmt)
+        self.session.commit()
         
     
     def remover(self, id: int):
         delete_stmt = delete(models.Produto).where(models.Produto.id == id)
-        self.db.execute(delete_stmt)
-        self.db.commit()
+        self.session.execute(delete_stmt)
+        self.session.commit()
 
